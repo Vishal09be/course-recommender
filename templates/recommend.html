@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book & Paper Recommendations</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="auth-page">
+  <div class="auth-container wide">
+    <h1>📖 Book & Paper Recommendations</h1>
+
+    <div class="nav-links">
+      {% if username %}
+        <p>Welcome, <strong>{{ username }}</strong>! <a href="{{ url_for('logout') }}">Logout</a></p>
+      {% else %}
+        <p><a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('register') }}">Register</a></p>
+      {% endif %}
+    </div>
+
+    <form id="searchForm" onsubmit="fetchRecommendations(event)" class="search-form">
+      <input type="text" id="topic" name="topic" placeholder="🔍 Enter a topic (e.g. AI, NLP)" required>
+      <button type="submit">Get Recommendations</button>
+    </form>
+
+    <h2>📚 Recommended Books</h2>
+    <ul id="books" class="card-grid"></ul>
+
+    <h2>📰 Recommended Papers</h2>
+    <ul id="papers" class="card-grid"></ul>
+  </div>
+
+  <script>
+    async function fetchRecommendations(event) {
+      event.preventDefault();
+      const topic = document.getElementById('topic').value.trim();
+      if (!topic) return;
+
+      const res = await fetch("https://jvqu1pdf65.execute-api.us-east-1.amazonaws.com/dev/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ topic })
+      });
+
+      const data = await res.json();
+
+      const booksList = document.getElementById('books');
+      const papersList = document.getElementById('papers');
+      booksList.innerHTML = '';
+      papersList.innerHTML = '';
+
+      if (data.books?.length) {
+        data.books.forEach(book => {
+          const li = document.createElement('li');
+          li.className = 'card';
+          li.innerHTML = `<h3>${book.title}</h3><p><strong>Author:</strong> ${book.author}</p>`;
+          booksList.appendChild(li);
+        });
+      } else {
+        booksList.innerHTML = "<p>No books found.</p>";
+      }
+
+      if (data.papers?.length) {
+        data.papers.forEach(paper => {
+          const li = document.createElement('li');
+          li.className = 'card';
+          li.innerHTML = `<h3><a href="${paper.link}" target="_blank">${paper.title}</a></h3>`;
+          papersList.appendChild(li);
+        });
+      } else {
+        papersList.innerHTML = "<p>No papers found.</p>";
+      }
+    }
+  </script>
+</body>
+</html>

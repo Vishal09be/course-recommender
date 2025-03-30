@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ML Resource Search</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="auth-page">
+  <div class="auth-container wide">
+    <h1>🔎 Unified ML Resource Search</h1>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, msg in messages %}
+        <p class="flash {{ category }}">{{ msg }}</p>
+      {% endfor %}
+    {% endwith %}
+
+    <!-- Auth Navigation -->
+    <div class="nav-links">
+      {% if username %}
+        <p>Welcome, <strong>{{ username }}</strong>! <a href="{{ url_for('logout') }}">Logout</a></p>
+      {% else %}
+        <p><a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('register') }}">Register</a></p>
+      {% endif %}
+    </div>
+
+    <!-- Search Section Cards -->
+    <div class="card-grid">
+      <!-- Course Search Card -->
+      <div class="card">
+        <h2>🎓 Search Courses</h2>
+        <form method="POST">
+          <input type="text" name="course_search" placeholder="e.g. Python, AI" value="{{ course_query }}">
+          <button type="submit">Search</button>
+        </form>
+      </div>
+
+      <!-- Article Search Card -->
+      <div class="card">
+        <h2>📰 Search Articles</h2>
+        <form method="POST">
+          <input type="text" name="article_search" placeholder="e.g. Machine Learning" value="{{ article_query }}">
+          <button type="submit">Search</button>
+        </form>
+      </div>
+
+      <!-- Book/Paper Recommendation Card -->
+      <div class="card">
+        <h2>📘 Book & Paper Recommendations</h2>
+        <form method="POST">
+          <input type="text" name="rec_topic" placeholder="e.g. Deep Learning" value="{{ rec_topic }}">
+          <button type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Course Results -->
+    <h2>🎓 Course Results</h2>
+    <div class="card-grid">
+      {% for course in courses %}
+        <div class="card">
+          <h3>{{ course['Title'] }}</h3>
+          <p><strong>Platform:</strong> {{ course['Site'] }}</p>
+          <p><strong>Rating:</strong> ⭐{{ course['Rating'] }}</p>
+          <p><strong>Duration:</strong> {{ course['Duration'] }} weeks</p>
+          <a href="{{ course['URL'] }}" target="_blank" class="btn">View Course</a>
+        </div>
+      {% else %}
+        <p>No courses found.</p>
+      {% endfor %}
+    </div>
+
+    <!-- Article Results -->
+    <h2>📰 Article Results</h2>
+    <div class="card-grid">
+      {% for article in articles %}
+        <div class="card">
+          {% if article['cover_image'] %}
+            <img src="{{ article['cover_image'] }}" class="card-image" alt="Cover">
+          {% endif %}
+          <h3>{{ article['title'] }}</h3>
+          <p><strong>Author:</strong> {{ article['user']['name'] }}</p>
+          <a href="{{ article['url'] }}" target="_blank" class="btn">Read More</a>
+        </div>
+      {% else %}
+        <p>No articles found.</p>
+      {% endfor %}
+    </div>
+
+    <!-- Book Results -->
+    <h2>📘 Book Recommendations</h2>
+    <div class="card-grid">
+      {% for book in books %}
+        <div class="card">
+          <h3>{{ book.title }}</h3>
+          <p><strong>Author:</strong> {{ book.author }}</p>
+        </div>
+      {% else %}
+        <p>No books found.</p>
+      {% endfor %}
+    </div>
+
+    <!-- Paper Results -->
+    <h2>📄 Research Paper Recommendations</h2>
+    <div class="card-grid">
+      {% for paper in papers %}
+        <div class="card">
+          <h3><a href="{{ paper.link }}" target="_blank">{{ paper.title }}</a></h3>
+        </div>
+      {% else %}
+        <p>No research papers found.</p>
+      {% endfor %}
+    </div>
+  </div>
+</body>
+</html>
