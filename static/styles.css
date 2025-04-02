@@ -144,4 +144,35 @@ body {
   .btn:hover {
     transform: translateY(-2px);
   }
-  
+  /* Header styling */
+.site-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .site-header {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* Better control for long titles */
+.card h3[title],
+.card h3 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Result cards specifically */
+.result-card {
+  min-height: 230px;
+}
+
+/* Favicon fallback (optional) */
+link[rel="icon"] {
+  display: none;
+}
